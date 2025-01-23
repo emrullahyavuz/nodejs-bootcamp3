@@ -1,1 +1,2 @@
-require("./add.js");
+require("./batman.js");
+require("./superman.js");
