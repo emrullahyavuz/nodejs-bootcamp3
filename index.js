@@ -1,4 +1,7 @@
-const { sum, subtract } = require("./math.js");
+let obj1 = { name: "Emin Başbayan" };
+let obj2 = obj1;
+/* obj2.name = "Ali Yılmaz"; */
+obj2 = { name: "Ali Yılmaz" };
 
-console.log(sum(2, 5));
-console.log(subtract(9, 4));
+console.log(obj1);
+console.log(obj2);
