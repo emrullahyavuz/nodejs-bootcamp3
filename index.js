@@ -1,7 +1,3 @@
-let obj1 = { name: "Emin Başbayan" };
-let obj2 = obj1;
-/* obj2.name = "Ali Yılmaz"; */
-obj2 = { name: "Ali Yılmaz" };
+const data = require("./data.json");
 
-console.log(obj1);
-console.log(obj2);
+console.log(data);
