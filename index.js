@@ -1,11 +1,4 @@
-const SuperHero = require("./super-hero.js");
-const batman = new SuperHero("batman");
-const superman = new SuperHero("superman");
+const { sum, subtract } = require("./math.js");
 
-/* const superHero = require("./super-hero.js");
-console.log(superHero.getName()); // Batman
-superHero.setName("Superman");
-console.log(superHero.getName()); // Superman
-
-const newSuperHero = require("./super-hero.js");
-console.log(newSuperHero.getName()); // Batman - Superman */
+console.log(sum(2, 5));
+console.log(subtract(9, 4));
