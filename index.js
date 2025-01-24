@@ -1,16 +1,15 @@
-const EventEmitter = require("events");
-const emitter = new EventEmitter();
+const PizzaShop = require("./pizza-shop.js");
+const DrinkMachine = require("./drink-machine.js");
 
-emitter.on("orderPizza", (size, topping) => {
-  console.log(`Bir ${size} pizza pişiriliyor. İçindekiler: ${topping}`);
+const pizzaShop = new PizzaShop();
+const drinkMachine = new DrinkMachine();
+
+pizzaShop.on("order", (size, topping) => {
+  console.log(`Sipariş alındı: ${size} pizza, ${topping} ile.`);
+  drinkMachine.serveDrink(size);
 });
 
-emitter.on("orderPizza", (size) => {
-  if (size === "large") {
-    console.log("Ücretsiz içecek servisi.");
-  }
-});
-
-emitter.emit("orderPizza", "large", "mantar");
-
-emitter.emit("orderPizza", "small", "sucuk");
+pizzaShop.displayOrderNumber();
+pizzaShop.order("large", "peynir");
+pizzaShop.order("small", "sucuk");
+pizzaShop.displayOrderNumber();
