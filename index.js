@@ -6,9 +6,12 @@ const insructor = {
   lastName: "Başbayan",
 };
 
+const name = "Emin";
+
 const server = http.createServer((request, response) => {
   response.writeHead(200, { "Content-Type": "text/html" });
-  const html = fs.readFileSync("./index.html", "utf-8");
+  let html = fs.readFileSync("./index.html", "utf-8");
+  html = html.replace("{{name}}", name)
   response.end(html);
 });
 
