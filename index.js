@@ -1,15 +1,6 @@
-const PizzaShop = require("./pizza-shop.js");
-const DrinkMachine = require("./drink-machine.js");
+const buffer = new Buffer("Emin Başbayan");
 
-const pizzaShop = new PizzaShop();
-const drinkMachine = new DrinkMachine();
+console.log(buffer.toString());
+console.log(buffer);
+console.log(buffer.toJSON());
 
-pizzaShop.on("order", (size, topping) => {
-  console.log(`Sipariş alındı: ${size} pizza, ${topping} ile.`);
-  drinkMachine.serveDrink(size);
-});
-
-pizzaShop.displayOrderNumber();
-pizzaShop.order("large", "peynir");
-pizzaShop.order("small", "sucuk");
-pizzaShop.displayOrderNumber();
