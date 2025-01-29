@@ -10,15 +10,14 @@ const customers = [
   },
 ];
 
-const role = "user";
-
 const user = {
   id: 1,
   name: "Emin Başbayan",
+  role: "admin",
 };
 
 function isAdmin(req, res, next) {
-  if (role === "admin") {
+  if (req.role === "admin") {
     next();
   } else {
     res.status(401).send("Kullanıcı yetkisi yok!");
@@ -27,6 +26,8 @@ function isAdmin(req, res, next) {
 
 function isLogin(req, res, next) {
   if (user) {
+    req.role = user.role;
+    req.customData = "BilGen Yazılım Akademi";
     next();
   } else {
     res.status(401).send("Lütfen giriş yapınız!");
@@ -54,6 +55,8 @@ app.get("/api/customers", (req, res) => {
 });
 
 app.get("/admin", isLogin, isAdmin, (req, res) => {
+  console.log(req.customData);
+
   res.send("Kullanıcı admin sayfasına girebilir.");
 });
 
