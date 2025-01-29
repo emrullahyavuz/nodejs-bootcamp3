@@ -1,18 +1,27 @@
 const http = require("node:http");
-const fs = require("node:fs");
 
-const insructor = {
-  firstName: "Emin",
-  lastName: "Başbayan",
-};
-
-const name = "Emin";
+const customers = [
+  {
+    id: 1,
+    firstName: "Emin",
+    lastName: "Başbayan",
+  },
+];
 
 const server = http.createServer((request, response) => {
-  response.writeHead(200, { "Content-Type": "text/html" });
-  let html = fs.readFileSync("./index.html", "utf-8");
-  html = html.replace("{{name}}", name)
-  response.end(html);
+  if (request.url === "/") {
+    response.writeHead(200, { "Content-Type": "text/plain" });
+    response.end("Home Page");
+  } else if (request.url === "/products-page") {
+    response.writeHead(200, { "Content-Type": "text/plain" });
+    response.end("Products Page");
+  } else if (request.url === "/api/customers") {
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(JSON.stringify(customers));
+  } else {
+    response.writeHead(404);
+    response.end("Page not found!");
+  }
 });
 
 server.listen(3000, () => {
