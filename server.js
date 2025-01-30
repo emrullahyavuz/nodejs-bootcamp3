@@ -61,6 +61,13 @@ app.put("/", (req, res) => {
   }
 });
 
+// delete - params
+app.delete("/:userId", (req, res) => {
+  const { userId } = req.params;
+  users = users.filter((user) => user.id !== Number(userId));
+  res.status(204).json(users);
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Sunucu ${PORT} portunda çalışıyor!`);
