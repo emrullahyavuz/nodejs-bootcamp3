@@ -24,10 +24,28 @@ app.post("/", (req, res) => {
 });
 
 // update
-app.put("/:userId", (req, res) => {
+/* app.put("/:userId", (req, res) => {
   const { userId } = req.params;
   const { email } = req.body;
   console.log(email);
+
+  const findUser = users.find((user) => user.id === Number(userId));
+  if (findUser) {
+    users = users.map((user) => {
+      if (user.id === Number(userId)) {
+        return { ...user, email };
+      }
+      return user;
+    });
+    res.json({ success: true, users });
+  } else {
+    res.json({ success: false, message: "Kullanıcı bulunamadı" });
+  }
+}); */
+
+// update - body
+app.put("/", (req, res) => {
+  const { id: userId, email } = req.body;
 
   const findUser = users.find((user) => user.id === Number(userId));
   if (findUser) {
