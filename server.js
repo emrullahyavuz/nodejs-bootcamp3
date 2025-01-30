@@ -9,16 +9,38 @@ let users = [
 // Middleware to parse JSON badies
 app.use(express.json());
 
+// read
 app.get("/", (req, res) => {
   res.json(users);
 });
 
+// create
 app.post("/", (req, res) => {
   const newUser = req.body;
 
   users = [...users, newUser];
 
   res.json(users);
+});
+
+// update
+app.put("/:userId", (req, res) => {
+  const { userId } = req.params;
+  const { email } = req.body;
+  console.log(email);
+
+  const findUser = users.find((user) => user.id === Number(userId));
+  if (findUser) {
+    users = users.map((user) => {
+      if (user.id === Number(userId)) {
+        return { ...user, email };
+      }
+      return user;
+    });
+    res.json({ success: true, users });
+  } else {
+    res.json({ success: false, message: "Kullanıcı bulunamadı" });
+  }
 });
 
 const PORT = 3000;
