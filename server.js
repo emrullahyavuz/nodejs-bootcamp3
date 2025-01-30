@@ -6,19 +6,18 @@ let users = [
   { id: 2, name: "Ayşe", age: 30, email: "ayse@example.com" },
 ];
 
+// Middleware to parse JSON badies
+app.use(express.json());
+
 app.get("/", (req, res) => {
   res.json(users);
 });
 
 app.post("/", (req, res) => {
-  const newUser = {
-    id: 3,
-    name: "Emin",
-    age: 27,
-    email: "emin@gmail.com",
-  };
+  const newUser = req.body;
+
   users = [...users, newUser];
-  
+
   res.json(users);
 });
 
