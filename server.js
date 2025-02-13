@@ -3,13 +3,10 @@ const app = express();
 const fs = require("node:fs");
 const path = require("node:path");
 
-let users = [
-  { id: 1, name: "Ahmet", age: 25, email: "ahmet@example.com" },
-  { id: 2, name: "Ayşe", age: 30, email: "ayse@example.com" },
-];
-
 // Middleware to parse JSON badies
 app.use(express.json());
+// content-type application/x-www-form-urlendcoded
+app.use(express.urlencoded({ extended: false }));
 
 const filePath = "data.json";
 
@@ -81,8 +78,19 @@ app.delete("/:userId", (req, res) => {
   const { userId } = req.params;
   let users = readData();
   users = users.filter((user) => user.id !== Number(userId));
-  writeData(users)
+  writeData(users);
   res.status(204).json(users);
+});
+
+app.post("/submit", (req, res) => {
+  console.log(req.body);
+  console.log(req.body.username);
+  console.log(req.body.email);
+  res.send("Form verileri alındı!");
+});
+
+app.get("/form", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "index.html"));
 });
 
 const PORT = 3000;
