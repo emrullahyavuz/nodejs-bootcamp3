@@ -1,8 +1,12 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const fs = require("node:fs");
 const path = require("node:path");
 
+// Tüm originlere izin veren basit yapılandırma
+app.use(cors());
+ 
 // Middleware to parse JSON badies
 app.use(express.json());
 // content-type application/x-www-form-urlendcoded
