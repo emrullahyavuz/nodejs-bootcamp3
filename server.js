@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const fs = require("node:fs");
 const path = require("node:path");
+const { logger } = require("./middleware/logEvents");
 
 // Tüm originlere izin veren basit yapılandırma
 const corsOptions = {
@@ -28,6 +29,9 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// Request log middleware
+app.use(logger);
 
 // Middleware to parse JSON badies
 app.use(express.json());
