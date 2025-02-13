@@ -4,6 +4,7 @@ const cors = require("cors");
 const fs = require("node:fs");
 const path = require("node:path");
 const { logger } = require("./middleware/logEvents");
+const errorHandler = require("./middleware/errorHandler");
 
 // Tüm originlere izin veren basit yapılandırma
 const corsOptions = {
@@ -13,7 +14,6 @@ const corsOptions = {
       "http://localhost:3000",
       "http://localhost:5173",
       "http://127.0.0.1:5173",
-      "https://www.google.com",
     ];
 
     if (whiteList.indexOf(origin) !== -1 || !origin) {
@@ -122,6 +122,8 @@ app.post("/submit", (req, res) => {
 app.get("/form", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "index.html"));
 });
+
+app.use(errorHandler);
 
 const PORT = 3000;
 app.listen(PORT, () => {
