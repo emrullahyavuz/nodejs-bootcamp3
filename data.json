@@ -16,5 +16,10 @@
     "name": "Emre",
     "age": 35,
     "email": "emre@example.com"
+  },
+  {
+    "id": 1739557079828,
+    "email": "basbayanemin@gmail.com",
+    "password": "123456"
   }
 ]
