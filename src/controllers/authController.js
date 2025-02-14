@@ -1,6 +1,8 @@
 const path = require("path");
 const fs = require("fs");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { secret, expiresIn } = require("../config/jwtConfig");
 
 // Yeni register fonksiyonu
 const registerUser = async (req, res) => {
@@ -60,9 +62,16 @@ const loginUser = async (req, res) => {
 
     // Şifreyi response'dan çıkar
     const { password: _, ...userWithoutPassword } = user;
+
+    // JWT token oluştur
+    const token = jwt.sign({ id: user.id, email: user.email }, secret, {
+      expiresIn,
+    });
+
     res.status(200).json({
       message: "Giriş başarılı!",
       user: userWithoutPassword,
+      token,
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
