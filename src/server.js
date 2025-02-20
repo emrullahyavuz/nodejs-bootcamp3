@@ -1,7 +1,12 @@
-const app = require('./app');
+require("dotenv").config();
+const app = require("./app");
+const connectDB = require("./config/dbConfig");
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
+
+// Veritabanı bağlantısını başlat 
+connectDB();
 
 app.listen(PORT, () => {
-    console.log(`Sunucu ${PORT} portunda çalışıyor!`);
-}); 
+  console.log(`Sunucu ${PORT} portunda çalışıyor!`);
+});
