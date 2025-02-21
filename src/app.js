@@ -9,6 +9,7 @@ const errorHandler = require("./middleware/errorHandler");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const productRoutes = require("./routes/productRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(logger);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/categories", categoryRoutes);
 
 // Static dosyalar
 app.use(express.static(path.join(__dirname, "views")));

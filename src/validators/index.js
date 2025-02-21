@@ -1,5 +1,6 @@
 const productValidationRules = require("./productValidator");
 const userValidationRules = require("./userValidator");
+const categoryValidationRules = require("./categoryValidator");
 const validate = require("./validatorMiddleware");
 
 const validateRegistration = [
@@ -18,8 +19,15 @@ const validateProduct = [
   validate,
 ];
 
+const validateCategory = [
+  categoryValidationRules.name,
+  categoryValidationRules.description,
+  validate,
+];
+
 module.exports = {
   validateRegistration,
   validateLogin,
   validateProduct,
+  validateCategory,
 };
