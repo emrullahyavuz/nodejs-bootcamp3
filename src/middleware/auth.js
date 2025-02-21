@@ -19,7 +19,7 @@ const verifyAccessToken = (req, res, next) => {
   }
 };
 
-const verifyRefreshToken = (req, res, next) => {
+const verifyRefreshToken = async (req, res, next) => {
   const token = req.cookies.refreshToken || req.body.refreshToken;
 
   if (!token) {
@@ -27,7 +27,7 @@ const verifyRefreshToken = (req, res, next) => {
   }
 
   try {
-    const storedToken = RefreshToken.findToken(token);
+    const storedToken = await RefreshToken.findOne({ token });
     if (!storedToken) {
       return res.status(403).json({ message: "Invalid refresh token" });
     }
@@ -36,9 +36,13 @@ const verifyRefreshToken = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (err) {
-    return res
-      .status(401)
-      .json({ message: "Invalid or expired refresh token" });
+    if (err.name === "TokenExpiredError") {
+      await RefreshToken.deleteOne({
+        token: req.cookies.refreshToken || req.body.refreshToken,
+      });
+      return res.status(403).json({ message: "Expired refresh token" });
+    }
+    return res.status(403).json({ message: "Invalid refresh token" });
   }
 };
 

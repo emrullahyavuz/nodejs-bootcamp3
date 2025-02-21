@@ -1,49 +1,20 @@
-// src/models/RefreshToken.js
-const fs = require("fs");
-const path = require("path");
+const mongoose = require("mongoose");
 
-class RefreshToken {
-  constructor() {
-    this.filePath = path.join(__dirname, "..", "..", "refreshTokens.json");
-    this.initializeTokenFile();
-  }
+const refreshTokenSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  token: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    expired: 7 * 24 * 60 * 60 * 1000, // 7 days
+  },
+});
 
-  initializeTokenFile() {
-    if (!fs.existsSync(this.filePath)) {
-      fs.writeFileSync(this.filePath, JSON.stringify([], null, 2));
-    }
-  }
-
-  saveToken(userId, token) {
-    const tokens = this.getAllTokens();
-    // Remove existing tokens for this user
-    const filteredTokens = tokens.filter((t) => t.userId !== userId);
-    filteredTokens.push({
-      userId,
-      token,
-      createdAt: new Date().toISOString(),
-    });
-    fs.writeFileSync(this.filePath, JSON.stringify(filteredTokens, null, 2));
-  }
-
-  removeToken(token) {
-    const tokens = this.getAllTokens();
-    const filteredTokens = tokens.filter((t) => t.token !== token);
-    fs.writeFileSync(this.filePath, JSON.stringify(filteredTokens, null, 2));
-  }
-
-  findToken(token) {
-    const tokens = this.getAllTokens();
-    return tokens.find((t) => t.token === token);
-  }
-
-  getAllTokens() {
-    try {
-      return JSON.parse(fs.readFileSync(this.filePath, "utf8"));
-    } catch (error) {
-      return [];
-    }
-  }
-}
-
-module.exports = new RefreshToken();
+module.exports = mongoose.model("RefreshToken", refreshTokenSchema);
