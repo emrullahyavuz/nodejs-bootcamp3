@@ -17,6 +17,7 @@ router.put(
   validateProduct,
   productController.updateProduct
 );
+router.get("/category/:categoryId", productController.getProductsByCategory);
 router.delete(
   "/:productId",
   verifyAccessToken,

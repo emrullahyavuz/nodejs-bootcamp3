@@ -65,9 +65,27 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const getProductsByCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const products = await Product.find({ category: categoryId }).populate(
+      "category"
+    );
+
+    if (!products) {
+      return res.status(404).json({ message: "Products not found" });
+    }
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   getAllProducts,
   createProduct,
   updateProduct,
   deleteProduct,
+  getProductsByCategory,
 };
