@@ -22,6 +22,13 @@ const productValidationRules = {
     .optional()
     .isInt({ min: 0 })
     .withMessage("Stok sayısal bir değer olmalıdır."),
+
+  category: body("category")
+    .trim()
+    .notEmpty()
+    .withMessage("Kategori boş bırakılamaz.")
+    .isMongoId()
+    .withMessage("Kategori geçerli bir ID olmalıdır."),
 };
 
 module.exports = productValidationRules;

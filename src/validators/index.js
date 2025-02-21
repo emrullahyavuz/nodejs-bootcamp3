@@ -16,6 +16,7 @@ const validateProduct = [
   productValidationRules.price,
   productValidationRules.description,
   productValidationRules.stock,
+  productValidationRules.category,
   validate,
 ];
 

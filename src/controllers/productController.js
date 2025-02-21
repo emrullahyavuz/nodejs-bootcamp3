@@ -1,8 +1,9 @@
 const Product = require("../models/Product");
+const Category = require("../models/Category");
 
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().populate("category");
     res.status(200).json(products);
   } catch (error) {
     console.log(error);
@@ -11,12 +12,19 @@ const getAllProducts = async (req, res) => {
 
 const createProduct = async (req, res) => {
   try {
-    const { name, price, description, stock } = req.body;
+    const { name, price, description, stock, category } = req.body;
+    const findCategory = await Category.findById(category);
+
+    if (!findCategory) {
+      return res.status(400).json({ message: "Category not found" });
+    }
+
     const savedProduct = await Product.create({
       name,
       price,
       description,
       stock,
+      category,
     });
 
     res.status(201).json(savedProduct);

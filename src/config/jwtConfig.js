@@ -3,7 +3,7 @@ module.exports = {
     secret:
       process.env.JWT_ACCESS_SECRET ||
       "53cea5b4979e78712a1ce6ea22afd9c760109fd6691ff10357e2e8d31f39cda1",
-    expiresIn: "1m", // Short-lived
+    expiresIn: "30m", // Short-lived
   },
   refreshToken: {
     secret:
