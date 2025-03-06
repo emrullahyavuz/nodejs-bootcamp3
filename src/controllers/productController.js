@@ -7,6 +7,7 @@ const getAllProducts = async (req, res) => {
     res.status(200).json(products);
   } catch (error) {
     console.log(error);
+    return res.status(500).json({ message: "Server Error" });
   }
 };
 
@@ -27,7 +28,7 @@ const createProduct = async (req, res) => {
       category,
     });
 
-    res.status(201).json(savedProduct);
+    return res.status(201).json(savedProduct);
   } catch (error) {
     console.log(error);
   }
@@ -41,27 +42,31 @@ const updateProduct = async (req, res) => {
       { new: true }
     );
 
-    res.status(200).json(updatedProduct);
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    return res.status(200).json(updatedProduct);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({ message: "Server Error" });
   }
 };
 
 const deleteProduct = async (req, res) => {
   try {
-    const { productId } = req.params;
-    const product = await Product.findById(productId);
+    const deletedProduct = await Product.findByIdAndDelete(
+      req.params.productId
+    );
 
-    if (!product) {
+    if (!deletedProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    await Product.findByIdAndDelete(productId);
-    res.status(204).json({ message: "Product deleted" });
+    return res.status(204).send();
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({ message: "Server Error" });
   }
 };
 
@@ -72,7 +77,7 @@ const getProductsByCategory = async (req, res) => {
       "category"
     );
 
-    if (!products) {
+    if (!products.length) {
       return res.status(404).json({ message: "Products not found" });
     }
 
