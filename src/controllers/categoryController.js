@@ -59,9 +59,34 @@ const deleteCategory = async (req, res) => {
   }
 };
 
+const getCategoryBySlug = async (req, res) => {
+  try {
+    const category = await Category.findBySlug(req.params.slug);
+
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Kategori bulunamadı",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: category,
+    });
+  } catch (error) {
+    console.error("Slug ile kategori bulma hatası:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Sunucu hatası",
+    });
+  }
+};
+
 module.exports = {
   getAllCategories,
   createCategory,
   updateCategory,
   deleteCategory,
+  getCategoryBySlug,
 };

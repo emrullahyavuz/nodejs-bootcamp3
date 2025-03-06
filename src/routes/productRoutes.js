@@ -205,3 +205,24 @@ module.exports = router;
  *       scheme: bearer
  *       bearerFormat: JWT
  */
+
+/**
+ * @swagger
+ * /api/products/slug/{slug}:
+ *   get:
+ *     summary: Slug ile ürün getir
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Ürünün slug değeri
+ *     responses:
+ *       200:
+ *         description: Ürün başarıyla getirildi
+ *       404:
+ *         description: Ürün bulunamadı
+ */
+router.get("/slug/:slug", productController.getProductBySlug);

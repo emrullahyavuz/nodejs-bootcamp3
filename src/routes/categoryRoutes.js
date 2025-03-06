@@ -194,4 +194,25 @@ router.delete(
   categoryController.deleteCategory
 );
 
+/**
+ * @swagger
+ * /api/categories/slug/{slug}:
+ *   get:
+ *     summary: Slug ile kategori getir
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Kategorinin slug değeri
+ *     responses:
+ *       200:
+ *         description: Kategori başarıyla getirildi
+ *       404:
+ *         description: Kategori bulunamadı
+ */
+router.get("/slug/:slug", categoryController.getCategoryBySlug);
+
 module.exports = router;
