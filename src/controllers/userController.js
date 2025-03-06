@@ -1,45 +1,49 @@
 const User = require("../models/User.js");
-const path = require("path");
-const fs = require("fs");
 
-const getAllUsers = (req, res) => {
+const getAllUsers = async (req, res) => {
   try {
-    const users = User.findAll();
+    const users = await User.find(); // findAll yerine find() kullanıldı (MongoDB için)
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const createUser = (req, res) => {
+const createUser = async (req, res) => {
   try {
-    const newUser = { id: Date.now(), ...req.body }; // Benzersiz ID oluştur
-    User.create(newUser);
+    const newUser = new User(req.body);
+    await newUser.save(); // create yerine save() kullanıldı
     res.status(201).json(newUser);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-const updateUser = (req, res) => {
+const updateUser = async (req, res) => {
   try {
     const { id, email } = req.body;
-    const updatedUser = User.update(id, { email });
-    if (updatedUser) {
-      res.json({ success: true, user: updatedUser });
-    } else {
-      res.status(404).json({ success: false, message: "Kullanıcı bulunamadı" });
+    const updatedUser = await User.findByIdAndUpdate(id, { email }, { new: true });
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: "Kullanıcı bulunamadı" });
     }
+
+    res.json({ success: true, user: updatedUser });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-const deleteUser = (req, res) => {
+const deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    User.delete(userId);
-    res.status(204).send();
+    const deletedUser = await User.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: "Kullanıcı bulunamadı" });
+    }
+
+    res.status(204).send(); // Başarıyla silindi
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
