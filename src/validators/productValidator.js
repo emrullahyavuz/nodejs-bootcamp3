@@ -27,8 +27,6 @@ const productValidationRules = {
     .trim()
     .notEmpty()
     .withMessage("Kategori boş bırakılamaz.")
-    .isMongoId()
-    .withMessage("Kategori geçerli bir ID olmalıdır."),
 };
 
 module.exports = productValidationRules;

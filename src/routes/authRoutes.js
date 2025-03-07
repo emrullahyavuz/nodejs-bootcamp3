@@ -57,11 +57,11 @@ router.post("/register", validateRegistration, authController.registerUser);
  *               email:
  *                 type: string
  *                 format: email
- *                 example: "admin@gmail.com"
+ *                 example: "emin@gmail.com"
  *               password:
  *                 type: string
  *                 format: password
- *                 example: "Admin1234"
+ *                 example: "Emin1234"
  *     responses:
  *       200:
  *         description: Giriş başarılı, access ve refresh token döner.
