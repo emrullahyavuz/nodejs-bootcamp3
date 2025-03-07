@@ -26,7 +26,8 @@ const productValidationRules = {
   category: body("category")
     .trim()
     .notEmpty()
-    .withMessage("Kategori boş bırakılamaz.")
+    .withMessage("Kategori boş bırakılamaz."),
+    
 };
 
 module.exports = productValidationRules;

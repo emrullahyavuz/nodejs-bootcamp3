@@ -3,6 +3,7 @@ const router = express.Router();
 const productController = require("../controllers/productController");
 const { verifyAccessToken } = require("../middleware/auth");
 const { validateProduct } = require("../validators");
+const upload = require("../middleware/upload");
 
 /**
  * @swagger
@@ -226,3 +227,83 @@ module.exports = router;
  *         description: Ürün bulunamadı
  */
 router.get("/slug/:slug", productController.getProductBySlug);
+/**
+ * @swagger
+ * /api/products/{slug}/image:
+ *   post:
+ *     summary: Ürüne görsel yükle
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Ürünün slug değeri
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Yüklenecek görsel dosyası
+ *     responses:
+ *       200:
+ *         description: Görsel başarıyla yüklendi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Görsel başarıyla yüklendi."
+ *                 image:
+ *                   type: string
+ *                   example: "uploads/product-image.jpg"
+ *                 imageUrl:
+ *                   type: string
+ *                   example: "http://localhost:5000/uploads/product-image.jpg"
+ *       400:
+ *         description: Görsel yüklenmedi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Lütfen bir görsel yükleyin."
+ *       404:
+ *         description: Ürün bulunamadı
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Ürün bulunamadı."
+ *       500:
+ *         description: Sunucu hatası
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Görsel yüklenirken bir hata oluştu."
+ */
+router.post(
+  "/:slug/image",
+  verifyAccessToken,
+  upload.single("image"),
+  productController.uploadProductImage
+);

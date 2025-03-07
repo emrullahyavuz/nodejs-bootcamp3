@@ -26,9 +26,13 @@ const productSchema = new mongoose.Schema(
       min: 0,
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "Category",
       required: true,
+    },
+    image: {
+      type: String,
+      default: null,
     },
   },
   { timestamps: true }
