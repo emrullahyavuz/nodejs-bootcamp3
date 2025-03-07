@@ -4,6 +4,8 @@ const categoryController = require("../controllers/categoryController.js");
 const { validateCategory } = require("../validators");
 const { verifyAccessToken } = require("../middleware/auth");
 const upload = require("../middleware/upload");
+const { checkRole } = require("../middleware/roleAuth");
+const ROLES = require("../constants/roles");
 
 /**
  * @swagger
@@ -36,7 +38,11 @@ const upload = require("../middleware/upload");
  *       500:
  *         description: Sunucu hatası.
  */
-router.get("/", categoryController.getAllCategories);
+router.get(
+  "/",
+  verifyAccessToken,
+  categoryController.getAllCategories
+);
 
 /**
  * @swagger
@@ -91,6 +97,7 @@ router.post(
   "/",
   verifyAccessToken,
   validateCategory,
+  checkRole(ROLES.EDITOR),
   categoryController.createCategory
 );
 

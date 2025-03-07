@@ -7,7 +7,7 @@ const RefreshToken = require("../models/RefreshToken");
 const User = require("../models/User");
 
 const generateTokens = (user) => {
-  const accessTokenPayload = { id: user._id, email: user.email };
+  const accessTokenPayload = { id: user._id, email: user.email, role: user.role };
   const refreshTokenPayload = { id: user._id };
 
   const newAccessToken = jwt.sign(accessTokenPayload, accessToken.secret, {
