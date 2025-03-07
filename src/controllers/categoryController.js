@@ -1,4 +1,6 @@
 const Category = require("../models/Category");
+const fs = require("fs").promises;
+const path = require("path");
 
 const getAllCategories = async (req, res) => {
   try {
@@ -83,10 +85,63 @@ const getCategoryBySlug = async (req, res) => {
   }
 };
 
+const uploadCategoryImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Lütfen bir görsel yükleyin." });
+    }
+
+    const category = await Category.findOne({ slug: req.params.slug });
+    if (!category) {
+      // Delete uploaded file
+      await fs.unlink(req.file.path);
+      return res.status(404).json({ message: "Kategori bulunamadı." });
+    }
+
+    // Delete old image if exists
+    if (category.image) {
+      const oldImagePath = path.join(__dirname, "..", category.image);
+      try {
+        await fs.unlink(oldImagePath);
+      } catch (error) {
+        console.error("Eski görsel silinirken hata oluştu:", error);
+      }
+    }
+
+    // Update image path (relative to uploads directory)
+    const relativePath = path.relative(
+      path.join(__dirname, ".."),
+      req.file.path
+    );
+    category.image = relativePath;
+    await category.save();
+
+    // Generate image URL
+    const imageUrl = `${req.protocol}://${req.get(
+      "host"
+    )}/${relativePath.replace(/\\/g, "/")}`;
+
+    res.status(200).json({
+      message: "Görsel başarıyla yüklendi.",
+      image: category.image,
+      imageUrl: imageUrl,
+    });
+  } catch (error) {
+    if (req.file) {
+      await fs.unlink(req.file.path);
+    }
+    res.status(500).json({
+      message: "Görsel yüklenirken bir hata oluştu.",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllCategories,
   createCategory,
   updateCategory,
   deleteCategory,
   getCategoryBySlug,
+  uploadCategoryImage
 };

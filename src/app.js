@@ -23,6 +23,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(logger);
 
+// Statik dosta servisi için uploads klasörünü dışarı aç
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);

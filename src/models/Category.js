@@ -15,6 +15,10 @@ const categorySchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    image: {
+      type: String,
+      default: null,
+    }
   },
   { timestamps: true }
 );
@@ -38,7 +42,7 @@ categorySchema.pre("save", async function (next) {
       let slug = baseSlug;
       let counter = 1;
       
-      while (await mongoose.model("Category").findOne({ slug, _id: { $ne: this._id } })) {
+      while (await mongoose.models.Category.findOne({ slug })) {
         slug = `${baseSlug}-${counter}`;
         counter++;
       }

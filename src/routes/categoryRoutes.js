@@ -3,6 +3,7 @@ const router = express.Router();
 const categoryController = require("../controllers/categoryController.js");
 const { validateCategory } = require("../validators");
 const { verifyAccessToken } = require("../middleware/auth");
+const upload = require("../middleware/upload");
 
 /**
  * @swagger
@@ -214,5 +215,85 @@ router.delete(
  *         description: Kategori bulunamadı
  */
 router.get("/slug/:slug", categoryController.getCategoryBySlug);
+/**
+ * @swagger
+ * /api/categories/{slug}/image:
+ *   post:
+ *     summary: Kategoriye görsel yükle
+ *     tags: [Categories]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Kategorinin slug değeri
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Yüklenecek görsel dosyası
+ *     responses:
+ *       200:
+ *         description: Görsel başarıyla yüklendi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Görsel başarıyla yüklendi."
+ *                 image:
+ *                   type: string
+ *                   example: "uploads/category-image.jpg"
+ *                 imageUrl:
+ *                   type: string
+ *                   example: "http://localhost:5000/uploads/category-image.jpg"
+ *       400:
+ *         description: Görsel yüklenmedi
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Lütfen bir görsel yükleyin."
+ *       404:
+ *         description: Kategori bulunamadı
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Kategori bulunamadı."
+ *       500:
+ *         description: Sunucu hatası
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Görsel yüklenirken bir hata oluştu."
+ */
+router.post(
+  "/:slug/image",
+  verifyAccessToken,
+  upload.single("image"),
+  categoryController.uploadCategoryImage
+);
 
 module.exports = router;
