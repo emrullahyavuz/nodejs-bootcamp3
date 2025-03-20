@@ -16,7 +16,7 @@ const getAllProducts = async (req, res) => {
 const createProduct = async (req, res) => {
   try {
     const { name, price, description, stock, category } = req.body;
-    const findCategory = await Category.findOne({ slug: category });
+    const findCategory = await Category.findById(category);
 
     if (!findCategory) {
       return res.status(400).json({ message: "Category not found" });
