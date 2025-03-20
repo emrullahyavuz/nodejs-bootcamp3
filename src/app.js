@@ -10,6 +10,7 @@ const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const productRoutes = require("./routes/productRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
+const couponRoutes = require("./routes/couponRoutes");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger.config");
 
@@ -31,6 +32,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/coupons", couponRoutes);
 
 // Swagger dokümantasyonu
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

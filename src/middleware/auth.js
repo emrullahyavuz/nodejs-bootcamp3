@@ -46,4 +46,25 @@ const verifyRefreshToken = async (req, res, next) => {
   }
 };
 
-module.exports = { verifyAccessToken, verifyRefreshToken };
+// Belirli rollere göre erişim kısıtlama fonksiyonu
+const authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ 
+        success: false,
+        message: "Lütfen önce giriş yapın" 
+      });
+    }
+
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ 
+        success: false,
+        message: `${req.user.role} rolündeki kullanıcıların bu işleme erişim yetkisi yok` 
+      });
+    }
+
+    next();
+  };
+};
+
+module.exports = { verifyAccessToken, verifyRefreshToken, authorizeRoles };
