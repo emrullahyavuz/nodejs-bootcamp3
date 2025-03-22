@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerçek Zamanlı Chat</title>
+    <style>
+        /* Ana container stilleri */
+        .chat-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        /* Online kullanıcılar stilleri */
+        .online-users {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .online-users-count {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .online-users-list {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        /* Giriş formu stilleri */
+        .login-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .login-form {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .login-input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+
+        /* Chat alanı stilleri */
+        .chat-area {
+            display: none; /* Başlangıçta gizli */
+        }
+
+        /* Mesaj alanı stilleri */
+        .messages-container {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Tekil mesaj stilleri */
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 70%;
+            clear: both;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message.received {
+            background-color: #f1f0f0;
+            float: left;
+            align-self: flex-start;
+        }
+
+        .message.sent {
+            background-color: #007bff;
+            color: white;
+            float: right;
+            align-self: flex-end;
+        }
+
+        .message .username {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .message small {
+            display: block;
+            font-size: 0.75em;
+            margin-bottom: 5px;
+            opacity: 0.7;
+        }
+
+        .message p {
+            margin: 0;
+        }
+
+        /* Mesaj gönderme formu stilleri */
+        .message-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .send-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .send-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Yazıyor göstergesi stili */
+        .typing-indicator {
+            font-style: italic;
+            color: #666;
+            margin: 5px 0;
+            height: 20px;
+        }
+
+        /* Clearfix artık gerekli değil çünkü flexbox kullanıyoruz */
+        .message-wrapper {
+            width: 100%;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Kullanıcı Giriş Formu -->
+        <div class="login-container" id="loginContainer">
+            <h2>Sohbete Katıl</h2>
+            <form class="login-form" id="loginForm">
+                <input type="text" class="login-input" id="usernameInput" placeholder="Kullanıcı adınızı girin..." required>
+                <button type="submit" class="send-button">Katıl</button>
+            </form>
+        </div>
+
+        <!-- Chat Alanı -->
+        <div class="chat-area" id="chatArea">
+            <!-- Online Kullanıcılar -->
+            <div class="online-users">
+                <div class="online-users-count">
+                    <span id="onlineCount">0</span> kullanıcı online
+                </div>
+                <div class="online-users-list" id="onlineUsers">
+                    <!-- Online kullanıcı listesi buraya gelecek -->
+                </div>
+            </div>
+
+            <div class="messages-container" id="messages">
+                <!-- Mesajlar buraya dinamik olarak eklenecek -->
+            </div>
+            <div class="typing-indicator" id="typingIndicator"></div>
+            <form class="message-form" id="messageForm">
+                <input type="text" class="message-input" id="messageInput" placeholder="Mesajınızı yazın...">
+                <button type="submit" class="send-button">Gönder</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // DOM elementlerini seç
+        const loginContainer = document.getElementById('loginContainer');
+        const chatArea = document.getElementById('chatArea');
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('usernameInput');
+        const messagesContainer = document.getElementById('messages');
+        const messageForm = document.getElementById('messageForm');
+        const messageInput = document.getElementById('messageInput');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const onlineCount = document.getElementById('onlineCount');
+        const onlineUsers = document.getElementById('onlineUsers');
+
+        // Socket.io bağlantısını başlat
+        const socket = io();
+        
+        let username = '';
+
+        // Kullanıcı girişi
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            username = usernameInput.value.trim();
+            
+            if (username) {
+                // Kullanıcı adını socket'e gönder
+                socket.emit('setUsername', username);
+                
+                // Giriş formunu gizle, chat alanını göster
+                loginContainer.style.display = 'none';
+                chatArea.style.display = 'block';
+            }
+        });
+
+        // Online kullanıcıları güncelle
+        socket.on('onlineUsers', (data) => {
+            onlineCount.textContent = data.count;
+            onlineUsers.textContent = data.users.join(', ');
+        });
+
+        // Yazma durumu için zamanlayıcı
+        let typingTimer;
+
+        // Mesaj gönderme işlemi
+        messageForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const message = messageInput.value.trim();
+            
+            if (message) {
+                // Mesajı socket üzerinden gönder
+                socket.emit('sendMessage', {
+                    text: message,
+                    username: username
+                });
+                messageInput.value = '';
+            }
+        });
+
+        // Yazıyor durumunu kontrol et
+        messageInput.addEventListener('input', () => {
+            socket.emit('typing', {
+                isTyping: true,
+                username: username
+            });
+            
+            // Zamanlayıcıyı sıfırla
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                socket.emit('typing', {
+                    isTyping: false,
+                    username: username
+                });
+            }, 1000);
+        });
+
+        // Yeni mesaj geldiğinde
+        socket.on('message', (data) => {
+            const messageWrapper = document.createElement('div');
+            messageWrapper.className = 'message-wrapper';
+            
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            
+            // Mesaj sahibini kontrol et
+            if (data.userId === socket.id) {
+                messageElement.classList.add('sent');
+            } else {
+                messageElement.classList.add('received');
+            }
+
+            // Mesaj içeriğini oluştur
+            messageElement.innerHTML = `
+                <div class="username">${data.username}</div>
+                <small>${new Date(data.timestamp).toLocaleTimeString()}</small>
+                <p>${data.text}</p>
+            `;
+
+            messageWrapper.appendChild(messageElement);
+            messagesContainer.appendChild(messageWrapper);
+            
+            // Otomatik scroll
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        });
+
+        // Yazıyor durumunu göster/gizle
+        socket.on('userTyping', (data) => {
+            if (data.isTyping) {
+                typingIndicator.textContent = `${data.username} yazıyor...`;
+            } else {
+                typingIndicator.textContent = '';
+            }
+        });
+    </script>
+</body>
+</html> 
