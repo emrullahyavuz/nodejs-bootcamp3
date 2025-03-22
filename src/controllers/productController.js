@@ -3,6 +3,7 @@ const Category = require("../models/Category");
 const ApiFeatures = require("../utils/apiFeatures");
 const fs = require("fs").promises;
 const path = require("path");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 /**
  * Tüm ürünleri getiren ve arama, sayfalama özellikleri sunan fonksiyon

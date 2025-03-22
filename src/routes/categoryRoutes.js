@@ -14,8 +14,6 @@ const ROLES = require("../constants/roles");
  *     summary: Tüm kategorileri getir
  *     description: Sistemdeki tüm kategorileri döndürür.
  *     tags: [Categories]
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Kategori listesi başarıyla getirildi.
@@ -38,11 +36,7 @@ const ROLES = require("../constants/roles");
  *       500:
  *         description: Sunucu hatası.
  */
-router.get(
-  "/",
-  verifyAccessToken,
-  categoryController.getAllCategories
-);
+router.get("/", categoryController.getAllCategories);
 
 /**
  * @swagger
