@@ -5,9 +5,14 @@ const jwt = require("jsonwebtoken");
 const { accessToken, refreshToken } = require("../config/jwtConfig");
 const RefreshToken = require("../models/RefreshToken");
 const User = require("../models/User");
+const EmailService = require("../utils/emailService");
 
 const generateTokens = (user) => {
-  const accessTokenPayload = { id: user._id, email: user.email, role: user.role };
+  const accessTokenPayload = {
+    id: user._id,
+    email: user.email,
+    role: user.role,
+  };
   const refreshTokenPayload = { id: user._id };
 
   const newAccessToken = jwt.sign(accessTokenPayload, accessToken.secret, {
@@ -39,6 +44,22 @@ const registerUser = async (req, res) => {
     });
 
     await user.save();
+
+    EmailService.sendWelcomeEmail(user)
+      .then((result) => {
+        console.log("Hoş geldiniz e-postası durumu:", result.success);
+      })
+      .catch((error) => {
+        console.error("E-posta gönderiminde hata:", error);
+      });
+
+      EmailService.sendAdminNotification(user)
+      .then((result) => {
+        console.log("Admin bildirim e-postası durumu:", result.success);
+      })
+      .catch((error) => {
+        console.error("Admin e-posta gönderiminde hata:", error);
+      });
 
     // Remove password from response
     const userResponse = user.toObject();
@@ -110,8 +131,8 @@ const loginUser = async (req, res) => {
 const refreshTokens = async (req, res) => {
   try {
     const oldRefreshToken = req.body.refreshToken;
-   console.log(req.user);
-   
+    console.log(req.user);
+
     // Remove old refresh token
     await RefreshToken.deleteOne({ token: oldRefreshToken });
 
